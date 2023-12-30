@@ -15,6 +15,6 @@ cardRouter.delete('/:cardId', deleteCard);
 
 cardRouter.put('/:cardId/likes', setLikeCard);
 
-cardRouter.delete(':cardId/likes', removeLikeCard);
+cardRouter.delete('/:cardId/likes', removeLikeCard);
 
 module.exports = cardRouter;
