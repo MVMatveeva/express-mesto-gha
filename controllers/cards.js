@@ -63,9 +63,10 @@ module.exports.removeLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+      } else {
+        res.status(200).send({ data: card });
       }
-      return res.status(200).send({ data: card });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
