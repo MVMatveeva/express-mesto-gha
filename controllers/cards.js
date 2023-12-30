@@ -40,14 +40,18 @@ module.exports.setLikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if (card) {
-        res.status(200).send(card);
-      } else {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
+      return res.status(200).send({ data: card });
     })
-    .catch(() => {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        return res.status(400).send({
+          message: 'Пользователь по указанному id не найден',
+        });
+      }
+      return res.status(500).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
