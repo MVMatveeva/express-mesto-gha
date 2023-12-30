@@ -3,9 +3,7 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((data) => res.send(data))
-    .catch(() =>
-      res.status(500).send({ message: 'Ошибка на стороне сервера' })
-    );
+    .catch(() => res.status(500).send({ message: 'Ошибка на стороне сервера' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -52,12 +50,13 @@ module.exports.setLikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if (!card) {
-        return res
+      if (card) {
+        res.status(200).send(card);
+      } else {
+        res
           .status(404)
           .send({ message: 'Карточка с указанным id не найдена' });
       }
-      return res.status(200).send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
