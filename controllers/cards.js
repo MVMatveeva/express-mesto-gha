@@ -28,8 +28,13 @@ module.exports.deleteCard = (req, res) => {
       res.status(404).send({ message: 'Карточка с указанным id не найдена' });
     }
   })
-    .catch(() => {
-      res.status(500).send({ message: 'Ошибка на стороне сервера' });
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        return res.status(400).send({
+          message: 'Пользователь по указанному id не найден',
+        });
+      }
+      return res.status(500).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
@@ -62,10 +67,10 @@ module.exports.removeLikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
-      } else {
+      if (card) {
         res.status(200).send({ data: card });
+      } else {
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
     })
     .catch((error) => {
