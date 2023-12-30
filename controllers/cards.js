@@ -68,7 +68,7 @@ module.exports.removeLikeCard = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.status(200).send({ data: card });
+        res.status(200).send(card);
       } else {
         res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
