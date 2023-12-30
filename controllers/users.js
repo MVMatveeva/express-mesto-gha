@@ -18,7 +18,7 @@ module.exports.getUserById = (req, res) => {
       res.status(200).send(user);
     })
     .catch(() => {
-      res.status(500).send({ message: 'Ошибка на стороне сервера' });
+      res.status(400).send({ message: 'Переданы некорректные данные' });
     });
 };
 

@@ -47,7 +47,7 @@ module.exports.setLikeCard = (req, res) => {
       }
     })
     .catch(() => {
-      res.status(500).send({ message: 'Ошибка на стороне сервера' });
+      res.status(400).send({ message: 'Переданы некорректные данные' });
     });
 };
 
