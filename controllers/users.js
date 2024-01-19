@@ -1,88 +1,132 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const NotFoundError = require('../middlewares/errors/NotFoundError');
+const BadRequestError = require('../middlewares/errors/BadRequestError');
+const ConflictError = require('../middlewares/errors/ConflictError');
+const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
+const InternalServerError = require('../middlewares/errors/InternalServerError');
 
-module.exports.getUsers = (req, res) => {
+const AUTH_ERROR = 11000;
+
+module.exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => {
-      res.send({ data: users });
+      res.send(users);
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка на стороне сервера' }));
+    .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь по указанному id не найден.' });
+        next(new NotFoundError('Пользователь по указанному id не найден.'));
         return;
       }
       res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res.status(400).send({
-          message: 'Пользователь по указанному id не найден',
-        });
+        return next(new BadRequestError('Пользователь по указанному id не найден'));
       }
-      return res.status(500).send({ message: 'Ошибка на стороне сервера' });
+      return next(new InternalServerError('Ошибка на стороне сервера'));
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User
-    .create({ name, about, avatar })
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => res.status(201).send(user))
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'Пользователь по указанному id не найден',
-        });
+      if (error.code === AUTH_ERROR) {
+        next(new ConflictError('Пользователь с данным email уже существует'));
+      } else if (error.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(500).send({ message: 'Ошибка на стороне сервера' });
+        next(new InternalServerError('Ошибка на стороне сервера'));
       }
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  User
-    .findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { runValidators: true, new: true },
+  )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+        next(new NotFoundError('Пользователь с указанным id не найден'));
         return;
       }
       res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'Переданы некорректные данные при обновлении профиля',
-        });
+        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       } else {
-        res.status(500).send({ message: 'Ошибка на стороне сервера' });
+        next(new InternalServerError('Ошибка на стороне сервера'));
       }
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User
-    .findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    { runValidators: true, new: true },
+  )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+        next(new NotFoundError('Пользователь с указанным id не найден'));
         return;
       }
       res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'Переданы некорректные данные при обновлении аватара',
-        });
+        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       } else {
-        res.status(500).send({ message: 'Ошибка на стороне сервера' });
+        next(new InternalServerError('Ошибка на стороне сервера'));
+      }
+    });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'super-secret-key', { expiresIn: '7d' });
+      res.status(200).send({ token });
+    })
+    .catch(() => {
+      next(new UnauthorizedError('Отказ в доступе'));
+    });
+};
+
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundError('Пользователь по указанному id не найден.'));
+        return;
+      }
+      res.status(200).send(user);
+    })
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        next(new BadRequestError('Некорректный id пользователя.'));
+      } else {
+        next(new InternalServerError('Ошибка на стороне сервера'));
       }
     });
 };

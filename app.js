@@ -10,15 +10,15 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6589d98e06d13fa8fbc806af',
-  };
 
-  next();
-});
 app.use(router);
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');
 });
+
+//"email": "yandexyandex@yandex.ru",
+//"password": "457967qq"
+
+//"name": "Tonya",
+//"password":"qwerty78l;l;9"
