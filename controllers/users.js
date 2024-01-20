@@ -114,7 +114,7 @@ module.exports.login = (req, res) => {
       res.status(200).send({ token });
     })
     .catch(() => {
-      res.status(401).send({ message: 'Отказ в доступе' });
+      res.status(401).send({ message: 'Пользователь с данным email уже существует' });
     });
 };
 
@@ -122,7 +122,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь по указанному id не найден' });
+        next(new NotFoundError('Пользователь по указанному id не найден.'));
         return;
       }
       res.status(200).send(user);
