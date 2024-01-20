@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const router = require('./routes');
 
 const { PORT = 3000 } = process.env;
@@ -13,12 +14,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
 
+app.use(errors());
+
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');
 });
-
-//"email": "yandexyandex@yandex.ru",
-//"password": "457967qq"
-
-//"name": "Tonya",
-//"password":"qwerty78l;l;9"
