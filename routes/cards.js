@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 const cardRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const {
