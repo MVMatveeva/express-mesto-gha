@@ -50,9 +50,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((error) => {
       if (error.code === AUTH_ERROR) {
-        next(new ConflictError({
-          'message': 'Пользователь с данным email уже существует'
-          }));
+        next(new ConflictError('Пользователь с данным email уже существует'));
       } else if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
       } else {
