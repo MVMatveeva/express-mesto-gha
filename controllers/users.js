@@ -111,10 +111,10 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'super-secret-key', { expiresIn: '7d' });
-      res.status(200).json({ token });
+      res.status(200).send({ token });
     })
     .catch(() => {
-      next(new UnauthorizedError('Отказ в доступе'));
+      res.status(401).send({ message: 'Отказ в доступе' });
     });
 };
 
