@@ -7,8 +7,6 @@ const ConflictError = require('../middlewares/errors/ConflictError');
 const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
 const InternalServerError = require('../middlewares/errors/InternalServerError');
 
-const AUTH_ERROR = 11000;
-
 module.exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => {
@@ -49,8 +47,8 @@ module.exports.createUser = (req, res, next) => {
       avatar: user.avatar,
     }))
     .catch((error) => {
-      if (error.code === AUTH_ERROR) {
-        next(new ConflictError(error.message));
+      if (error.code === 11000) {
+        next(new ConflictError('Пользователь с данным email уже существует'));
       } else if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
       } else {
