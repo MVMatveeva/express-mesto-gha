@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const BadRequestError = require('../middlewares/errors/BadRequestError');
-const ConflictError = require('../middlewares/errors/ConflictError');
-const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
+//const ConflictError = require('../middlewares/errors/ConflictError');
+//const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
 const InternalServerError = require('../middlewares/errors/InternalServerError');
 
 const AUTH_ERROR = 11000;
@@ -45,8 +45,8 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.status(201).send({
       name: user.name,
       about: user.about,
-      email: user.email,
       avatar: user.avatar,
+      email: user.email,
     }))
     .catch((error) => {
       if (error.code === AUTH_ERROR) {

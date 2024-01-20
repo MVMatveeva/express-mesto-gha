@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     minlength: [2, 'Минимальная длина поля "avatar" - 2'],
-    maxlength: [30, 'Максимальная длина поля "avatar" - 30'],
     validate: {
       validator: (v) => validator.isURL(v),
       message: 'Некорректный URL',
