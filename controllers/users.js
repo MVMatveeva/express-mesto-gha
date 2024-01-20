@@ -105,7 +105,7 @@ module.exports.updateAvatar = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -122,7 +122,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь по указанному id не найден.'));
+        res.status(404).send({ message: 'Пользователь по указанному id не найден' });
         return;
       }
       res.status(200).send(user);
