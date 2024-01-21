@@ -35,7 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
         return next(new ForbiddenError('Доступ запрещен'));
       }
       return Card.deleteOne(req.params.cardId)
-        .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
+        .then(() => { res.status(200).send({ message: 'Карточка успешно удалена' }); });
     })
     .catch(() => {
       next(new NotFoundError('Пользователь по указанному id не найден'));
