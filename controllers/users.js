@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const BadRequestError = require('../middlewares/errors/BadRequestError');
-//const ConflictError = require('../middlewares/errors/ConflictError');
-//const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
 const InternalServerError = require('../middlewares/errors/InternalServerError');
 
 const AUTH_ERROR = 11000;
