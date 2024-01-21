@@ -5,7 +5,6 @@ const userRouter = require('./users');
 const cardRouter = require('./cards');
 const { auth } = require('../middlewares/auth');
 const { login, createUser } = require('../controllers/users');
-const NotFoundError = require('../middlewares/errors/NotFoundError');
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -30,8 +29,8 @@ router.use('/users', userRouter);
 
 router.use('/cards', cardRouter);
 
-router.use((req, res, next) => {
-  next(new NotFoundError('Пользователь по указанному id не найден.'));
+router.use((req, res) => {
+  res.status(404).send({ message: 'Пользователь по указанному id не найден' });
 });
 
 module.exports = router;

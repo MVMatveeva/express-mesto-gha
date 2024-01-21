@@ -1,6 +1,7 @@
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const BadRequestError = require('../middlewares/errors/BadRequestError');
 const InternalServerError = require('../middlewares/errors/InternalServerError');
+const ForbiddenError = require('../middlewares/errors/ForbiddenError');
 
 const Card = require('../models/card');
 
@@ -25,19 +26,18 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndDelete(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
-      if (card) {
-        res.status(200).send({ message: 'Карточка удалена' });
-      } else {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
+      if (card.owner.toString() !== req.user._id) {
+        return next(new ForbiddenError('Доступ запрещен'));
+      }
+      return Card.findByIdAndDelete(req.params.cardId);
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        return (new BadRequestError('Пользователь по указанному id не найден'));
-      }
-      return next(new InternalServerError('Ошибка на стороне сервера'));
+    .catch(() => {
+      next(new NotFoundError('Пользователь по указанному id не найден'));
     });
 };
 
