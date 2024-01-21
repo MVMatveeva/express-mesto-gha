@@ -11,7 +11,13 @@ const {
 
 userRouter.get('/', getUsers);
 
-userRouter.get('/:userId', getUserById);
+//userRouter.get('/me', getUser);
+
+//userRouter.get('/:userId', getUserById);
+
+userRouter.get('/:userId', getUser);
+
+userRouter.get('/me', getUserById);
 
 userRouter.patch('/me', celebrate({
   body: Joi.object().keys({
@@ -19,8 +25,6 @@ userRouter.patch('/me', celebrate({
     about: Joi.string().min(2).max(30),
   }),
 }), updateUser);
-
-userRouter.get('/me', getUser);
 
 userRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
