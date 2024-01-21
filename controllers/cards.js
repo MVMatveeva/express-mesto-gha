@@ -58,7 +58,7 @@ module.exports.setLikeCard = (req, res, next) => {
       if (error.name === 'CastError') {
         return next(new BadRequestError('Пользователь по указанному id не найден'));
       }
-      next(new InternalServerError('Ошибка на стороне сервера'));
+      return next(new InternalServerError('Ошибка на стороне сервера'));
     });
 };
 
