@@ -17,6 +17,18 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => { res.status(200).send(user); })
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        next(new BadRequestError('Некорректный id пользователя.'));
+      } else {
+        next(new InternalServerError('Ошибка на стороне сервера'));
+      }
+    });
+};
+
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
@@ -118,14 +130,3 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => { res.status(200).send(user); })
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        next(new BadRequestError('Некорректный id пользователя.'));
-      } else {
-        next(new InternalServerError('Ошибка на стороне сервера'));
-      }
-    });
-};
