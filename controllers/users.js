@@ -127,4 +127,3 @@ module.exports.login = (req, res) => {
       res.status(401).send({ message: 'Пользователь с данным email уже существует' });
     });
 };
-
