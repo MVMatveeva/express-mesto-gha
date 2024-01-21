@@ -1,7 +1,6 @@
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const BadRequestError = require('../middlewares/errors/BadRequestError');
 const InternalServerError = require('../middlewares/errors/InternalServerError');
-const ForbiddenError = require('../middlewares/errors/ForbiddenError');
 
 const Card = require('../models/card');
 
@@ -32,7 +31,7 @@ module.exports.deleteCard = (req, res, next) => {
         return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
       if (card.owner.toString() !== req.user._id) {
-        return next(new ForbiddenError('Доступ запрещен'));
+        return res.status(403).send({ message: 'Доступ запрещен' });
       }
       return Card.deleteOne(req.params.cardId)
         .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
