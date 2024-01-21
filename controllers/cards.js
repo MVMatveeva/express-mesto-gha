@@ -33,7 +33,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() !== req.user._id) {
         return res.status(403).send({ message: 'Доступ запрещен' });
       }
-      return Card.deleteOne(req.params.cardId)
+      return Card.deleteOne(card)
         .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
     })
     .catch(() => {
