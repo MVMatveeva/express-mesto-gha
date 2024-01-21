@@ -49,10 +49,9 @@ module.exports.setLikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
-      } else {
-        res.status(200).send(card);
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
+      return res.status(200).send(card);
     })
     .catch(() => {
       //if (error.name === 'CastError') {
