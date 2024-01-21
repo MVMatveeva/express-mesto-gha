@@ -120,13 +120,7 @@ module.exports.login = (req, res) => {
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        next(new NotFoundError('Пользователь по указанному id не найден.'));
-        return;
-      }
-      res.status(200).send(user);
-    })
+    .then((user) => { res.status(200).send(user); })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Некорректный id пользователя.'));
