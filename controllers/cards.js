@@ -54,11 +54,11 @@ module.exports.setLikeCard = (req, res, next) => {
         res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        return next(new BadRequestError('Пользователь по указанному id не найден'));
-      }
-      return next(new InternalServerError('Ошибка на стороне сервера'));
+    .catch(() => {
+      //if (error.name === 'CastError') {
+       // return next(new BadRequestError('Пользователь по указанному id не найден'));
+     // }
+      next(new InternalServerError('Ошибка на стороне сервера'));
     });
 };
 
