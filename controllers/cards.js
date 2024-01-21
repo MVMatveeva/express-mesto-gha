@@ -26,7 +26,7 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() !== req.user._id) {
         return next(new ForbiddenError('Доступ запрещен'));
       }
-      return Card.deleteOne(req.params)
+      return Card.deleteOne(req.params.cardId)
         .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
     })
     .catch(() => {
