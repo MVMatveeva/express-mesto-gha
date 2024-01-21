@@ -33,14 +33,14 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь по указанному id не найден.' });
+        next(new NotFoundError('Пользователь по указанному id не найден.'));
         return;
       }
       res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return next(new BadRequestError('Пользователь по указанному id не найден'));
+        return res.status(400).send({ message: 'Пользователь по указанному id не найден' });
       }
       return next(new InternalServerError('Ошибка на стороне сервера'));
     });
