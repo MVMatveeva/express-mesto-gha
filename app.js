@@ -15,9 +15,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
 
-app.use(handleErrorCentralized);
-
 app.use(errors());
+
+app.use(handleErrorCentralized);
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');

@@ -4,6 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const BadRequestError = require('../middlewares/errors/BadRequestError');
 const ConflictError = require('../middlewares/errors/ConflictError');
+const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
 
 const AUTH_ERROR = 11000;
 
@@ -115,7 +116,7 @@ module.exports.updateAvatar = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -124,6 +125,6 @@ module.exports.login = (req, res) => {
       res.status(200).send({ token });
     })
     .catch(() => {
-      res.status(401).send({ message: 'Пользователь с данным email уже существует' });
+      next(new UnauthorizedError('Пользователь с данным email уже существует'));
     });
 };
