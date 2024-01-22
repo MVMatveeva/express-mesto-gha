@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const BadRequestError = require('../middlewares/errors/BadRequestError');
-const InternalServerError = require('../middlewares/errors/InternalServerError');
+const ConflictError = require('../middlewares/errors/ConflictError');
 
 const AUTH_ERROR = 11000;
 
@@ -22,7 +22,7 @@ module.exports.getUser = (req, res, next) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Некорректный id пользователя.'));
       } else {
-        next(new InternalServerError('Ошибка на стороне сервера'));
+        next(error);
       }
     });
 };
@@ -31,16 +31,16 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь по указанному id не найден.' });
+        next(new NotFoundError('Пользователь по указанному id не найден.'));
         return;
       }
       res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res.status(400).send({ message: 'Пользователь по указанному id не найден' });
+        return next(new BadRequestError('Пользователь по указанному id не найден'));
       }
-      return next(new InternalServerError('Ошибка на стороне сервера'));
+      return next(error);
     });
 };
 
@@ -60,11 +60,11 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((error) => {
       if (error.code === AUTH_ERROR) {
-        res.status(409).send({ message: 'Пользователь с данным email уже существует' });
+        next(new ConflictError('Пользователь с данным email уже существует'));
       } else if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        next(new InternalServerError('Ошибка на стороне сервера'));
+        next(error);
       }
     });
 };
@@ -87,7 +87,7 @@ module.exports.updateUser = (req, res, next) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       } else {
-        next(new InternalServerError('Ошибка на стороне сервера'));
+        next(error);
       }
     });
 };
@@ -110,7 +110,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       } else {
-        next(new InternalServerError('Ошибка на стороне сервера'));
+        next(error);
       }
     });
 };
