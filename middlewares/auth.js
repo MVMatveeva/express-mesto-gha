@@ -12,7 +12,7 @@ module.exports.auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return handleAuthError(res);
+    return handleAuthError(res, next);
   }
 
   const token = extractBearerToken(authorization);
@@ -21,7 +21,7 @@ module.exports.auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'super-secret-key');
   } catch (error) {
-    return handleAuthError(res);
+    return handleAuthError(res, next);
   }
 
   req.user = payload;
